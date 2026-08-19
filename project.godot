@@ -1,34 +1,4 @@
 ; Engine configuration file.
-<<<<<<< HEAD
-AdManager="*res://AdManager.gd"
-run/main_scene="res://Main.tscn"
-AdManager="*res://AdManager.gd"
-[configuration]
-AdManager="*res://AdManager.gd"
-run/main_scene="res://Main.tscn"
-AdManager="*res://AdManager.gd"
-entry_point="res://Main.tscn"
-AdManager="*res://AdManager.gd"
-run/main_scene="res://Main.tscn"
-AdManager="*res://AdManager.gd"
-config_version=5
-AdManager="*res://AdManager.gd"
-run/main_scene="res://Main.tscn"
-AdManager="*res://AdManager.gd"
-
-[application]
-AdManager="*res://AdManager.gd"
-run/main_scene="res://Main.tscn"
-AdManager="*res://AdManager.gd"
-config/name="Nightfall"
-AdManager="*res://AdManager.gd"
-run/main_scene="res://Main.tscn"
-AdManager="*res://AdManager.gd"
-config/features=PackedStringArray("4.3", "Mobile")
-AdManager="*res://AdManager.gd"
-run/main_scene="res://Main.tscn"
-AdManager="*res://AdManager.gd"
-=======
 ; It's best edited using the editor UI and not directly,
 ; since the properties and their values can change.
 
@@ -38,17 +8,12 @@ config_version=5
 
 config/name="Nightfall"
 config/features=PackedStringArray("4.3", "Mobile")
->>>>>>> deb50d83d5c59219c652870bb6e0c66e04a97840
 config/icon="res://icon.svg"
-AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
-<<<<<<< HEAD
-AdManager="*res://AdManager.gd"
-=======
 
 [autoload]
 
 GameData="*res://GameData.gd"
 AudioManager="*res://AudioManager.gd"
 LevelManager="*res://LevelManager.gd"
->>>>>>> deb50d83d5c59219c652870bb6e0c66e04a97840
+AdManager="*res://AdManager.gd"
