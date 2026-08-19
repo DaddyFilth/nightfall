@@ -1,51 +1,332 @@
+## main.gd  –  root scene controller
+## Drives the full game loop: intro → pre-level story → level play → post-level
+## story → next level.  Delegates audio to AudioManager, level state to
+## LevelManager, and narrative display to StoryPanel.
 extends Node2D
 
-var score: int = 0
-var score_label: Label
-var tap_label: Label
-var bg: ColorRect
+# ── palette (local aliases for ergonomics) ───────────────────────────────────
+const COLOR_BG     := GameData.COLOR_BG
+const COLOR_ACCENT := GameData.COLOR_ACCENT
+const COLOR_GOLD   := GameData.COLOR_GOLD
+const COLOR_CARD   := GameData.COLOR_CARD
+const COLOR_STAR   := GameData.COLOR_STAR
 
-func _ready():
-	_build_ui()
+# ── game-state machine ────────────────────────────────────────────────────────
+enum State { INTRO, PRE_STORY, PLAYING, POST_STORY, LEVEL_COMPLETE }
+var _state: State = State.INTRO
 
-func _build_ui():
-	bg = ColorRect.new()
-	bg.color = Color(0.05, 0.05, 0.15)
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
+# ── nodes ─────────────────────────────────────────────────────────────────────
+var _bg:           ColorRect
+var _star_layer:   Node2D
+var _flash_rect:   ColorRect
+var _story_panel:  Control   # StoryPanel instance
 
-	var title = Label.new()
-	title.text = "NIGHTFALL"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 64)
-	title.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	title.position = Vector2(get_viewport_rect().size.x / 2.0 - 200, 80)
-	title.size = Vector2(400, 80)
-	add_child(title)
+var _hud:          Control
+var _level_banner: Label
+var _score_card:   ColorRect
+var _score_label:  Label
+var _progress_bg:  ColorRect
+var _progress_bar: ColorRect
+var _tap_label:    Label
+var _level_label:  Label
 
-	score_label = Label.new()
-	score_label.text = "Score: 0"
-	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	score_label.add_theme_font_size_override("font_size", 48)
-	score_label.position = Vector2(get_viewport_rect().size.x / 2.0 - 200, 200)
-	score_label.size = Vector2(400, 60)
-	add_child(score_label)
+# ── star pool ─────────────────────────────────────────────────────────────────
+const STAR_COUNT     := 80
+const STAR_SPEED_BASE := 40.0
 
-	tap_label = Label.new()
-	tap_label.text = "Tap to play!"
-	tap_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tap_label.add_theme_font_size_override("font_size", 36)
-	tap_label.position = Vector2(get_viewport_rect().size.x / 2.0 - 200, get_viewport_rect().size.y / 2.0)
-	tap_label.size = Vector2(400, 50)
-	add_child(tap_label)
+var _stars:       Array = []
+var _star_speed:  float = 1.0   # multiplier
 
-func _input(event):
-	if event is InputEventScreenTouch and event.pressed:
+# ── tweens / timers ───────────────────────────────────────────────────────────
+var _tap_tween:   Tween
+var _flash_timer: float = 0.0
+var _intro_done:  bool  = false
+
+# ── intro animation state ─────────────────────────────────────────────────────
+var _intro_timer: float = 0.0
+const INTRO_DURATION := 2.2
+
+# =============================================================================
+func _ready() -> void:
+	_build_background()
+	_spawn_stars()
+	_build_hud()
+	_build_story_panel()
+	_connect_level_signals()
+	_run_intro()
+
+# ── background layer ──────────────────────────────────────────────────────────
+func _build_background() -> void:
+	_bg = ColorRect.new()
+	_bg.color = COLOR_BG
+	_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_bg)
+
+	_star_layer = Node2D.new()
+	add_child(_star_layer)
+
+	_flash_rect = ColorRect.new()
+	_flash_rect.color = Color(1, 1, 1, 0)
+	_flash_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_flash_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_flash_rect)
+
+# ── HUD layer ─────────────────────────────────────────────────────────────────
+func _build_hud() -> void:
+	var vp := get_viewport_rect().size
+	var cx := vp.x * 0.5
+
+	_hud = Control.new()
+	_hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_hud.modulate.a = 0.0   # fades in after intro
+	add_child(_hud)
+
+	# ── Title shadow + title ──────────────────────────────────────────────────
+	var ts := Label.new()
+	ts.text = "NIGHTFALL"
+	ts.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ts.add_theme_font_size_override("font_size", 72)
+	ts.add_theme_color_override("font_color", Color(0, 0, 0, 0.40))
+	ts.position = Vector2(cx - 220 + 4, 52 + 4)
+	ts.size = Vector2(440, 90)
+	_hud.add_child(ts)
+
+	var t := Label.new()
+	t.text = "NIGHTFALL"
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	t.add_theme_font_size_override("font_size", 72)
+	t.add_theme_color_override("font_color", COLOR_ACCENT)
+	t.position = Vector2(cx - 220, 52)
+	t.size = Vector2(440, 90)
+	_hud.add_child(t)
+
+	# ── Level banner ──────────────────────────────────────────────────────────
+	_level_banner = Label.new()
+	_level_banner.text = ""
+	_level_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_level_banner.add_theme_font_size_override("font_size", 26)
+	_level_banner.add_theme_color_override("font_color", Color(0.70, 0.60, 1.00))
+	_level_banner.position = Vector2(cx - 200, 142)
+	_level_banner.size = Vector2(400, 36)
+	_hud.add_child(_level_banner)
+
+	# ── Score card ────────────────────────────────────────────────────────────
+	_score_card = ColorRect.new()
+	_score_card.color = COLOR_CARD
+	_score_card.position = Vector2(cx - 170, 188)
+	_score_card.size = Vector2(340, 88)
+	_hud.add_child(_score_card)
+	_add_border_line(_score_card, Vector2(0, 0),  Vector2(340, 0),  COLOR_ACCENT)
+	_add_border_line(_score_card, Vector2(0, 88), Vector2(340, 88), COLOR_ACCENT)
+
+	_score_label = Label.new()
+	_score_label.text = "Score: 0"
+	_score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_score_label.add_theme_font_size_override("font_size", 52)
+	_score_label.add_theme_color_override("font_color", Color.WHITE)
+	_score_label.position = Vector2(cx - 170, 200)
+	_score_label.size = Vector2(340, 64)
+	_hud.add_child(_score_label)
+
+	# ── Progress bar ─────────────────────────────────────────────────────────
+	_progress_bg = ColorRect.new()
+	_progress_bg.color = Color(0.12, 0.10, 0.25)
+	_progress_bg.position = Vector2(cx - 170, 285)
+	_progress_bg.size = Vector2(340, 14)
+	_hud.add_child(_progress_bg)
+
+	_progress_bar = ColorRect.new()
+	_progress_bar.color = COLOR_ACCENT
+	_progress_bar.position = Vector2(cx - 170, 285)
+	_progress_bar.size = Vector2(0, 14)
+	_hud.add_child(_progress_bar)
+
+	# ── Level indicator (bottom-left) ─────────────────────────────────────────
+	_level_label = Label.new()
+	_level_label.text = "LVL 1"
+	_level_label.add_theme_font_size_override("font_size", 24)
+	_level_label.add_theme_color_override("font_color", Color(0.55, 0.50, 0.75))
+	_level_label.position = Vector2(20, vp.y - 60)
+	_level_label.size = Vector2(120, 36)
+	_hud.add_child(_level_label)
+
+	# ── Tap prompt ────────────────────────────────────────────────────────────
+	_tap_label = Label.new()
+	_tap_label.text = "Tap to begin!"
+	_tap_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_tap_label.add_theme_font_size_override("font_size", 40)
+	_tap_label.add_theme_color_override("font_color", Color(0.80, 0.70, 1.00))
+	_tap_label.position = Vector2(cx - 200, vp.y * 0.50)
+	_tap_label.size = Vector2(400, 55)
+	_hud.add_child(_tap_label)
+
+# ── story panel ───────────────────────────────────────────────────────────────
+func _build_story_panel() -> void:
+	_story_panel = load("res://StoryPanel.gd").new()
+	add_child(_story_panel)
+	_story_panel.hide()
+	_story_panel.connect("dismissed", Callable(self, "_on_story_dismissed"))
+
+# ── level signals ─────────────────────────────────────────────────────────────
+func _connect_level_signals() -> void:
+	LevelManager.connect("level_started",    Callable(self, "_on_level_started"))
+	LevelManager.connect("level_completed",  Callable(self, "_on_level_completed"))
+	LevelManager.connect("danger_triggered", Callable(self, "_on_danger_triggered"))
+
+# ── intro sequence ────────────────────────────────────────────────────────────
+func _run_intro() -> void:
+	_state = State.INTRO
+	AudioManager.play_music(1.0)
+	# Fade-in tween for HUD
+	var tw := create_tween()
+	tw.tween_interval(0.6)
+	tw.tween_property(_hud, "modulate:a", 1.0, 1.4)
+	tw.tween_callback(Callable(self, "_intro_finished"))
+
+func _intro_finished() -> void:
+	_intro_done = true
+	_show_pre_story()
+
+# ── story flow ────────────────────────────────────────────────────────────────
+func _show_pre_story() -> void:
+	_state = State.PRE_STORY
+	var d := LevelManager.current_data
+	_story_panel.show_story("— " + d["title"] + " —", d["story_pre"])
+
+func _show_post_story() -> void:
+	_state = State.POST_STORY
+	var d := LevelManager.current_data
+	_story_panel.show_story("Chapter End", d["story_post"])
+
+func _on_story_dismissed() -> void:
+	match _state:
+		State.PRE_STORY:
+			LevelManager.begin_level()
+		State.POST_STORY:
+			_advance_to_next_level()
+
+# ── level events ──────────────────────────────────────────────────────────────
+func _on_level_started(data: Dictionary) -> void:
+	_state = State.PLAYING
+	_star_speed = data.get("star_speed", 1.0)
+	AudioManager.set_music_pitch(data.get("music_pitch", 1.0))
+
+	var id: int = data.get("id", 1)
+	_level_label.text  = "LVL %d" % id
+	_level_banner.text = data.get("title", "")
+	_tap_label.text    = "Tap!"
+	_tap_label.add_theme_color_override("font_color", Color(0.80, 0.70, 1.00))
+
+	_apply_bg_color(data.get("bg_color", COLOR_BG))
+	_update_progress_bar(0.0)
+
+func _on_level_completed(_data: Dictionary) -> void:
+	_state = State.LEVEL_COMPLETE
+	AudioManager.play_sfx_level_up()
+	_trigger_flash(Color(0.55, 0.35, 1.00))
+	_tap_label.text = "Level Clear! ✦"
+	_tap_label.add_theme_color_override("font_color", COLOR_GOLD)
+	_update_progress_bar(1.0)
+	await get_tree().create_timer(1.6).timeout
+	_show_post_story()
+
+func _on_danger_triggered(_taps_left: int) -> void:
+	AudioManager.play_sfx_danger()
+	_tap_label.add_theme_color_override("font_color", GameData.COLOR_DANGER)
+
+func _advance_to_next_level() -> void:
+	var new_data := LevelManager.advance()
+	AudioManager.set_music_pitch(new_data.get("music_pitch", 1.0))
+	_score_label.text = "Score: 0"   # per-level score resets (global kept in LevelManager)
+	_update_progress_bar(0.0)
+	_show_pre_story()
+
+# ── tap handling ──────────────────────────────────────────────────────────────
+func _input(event: InputEvent) -> void:
+	if _state != State.PLAYING:
+		return
+	var tapped := (event is InputEventScreenTouch and event.pressed) or \
+				  (event is InputEventMouseButton  and event.pressed and \
+				   event.button_index == MOUSE_BUTTON_LEFT)
+	if tapped:
 		_on_tap()
-	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_tap()
 
-func _on_tap():
-	score += 1
-	score_label.text = "Score: %d" % score
-	tap_label.text = "Keep tapping!"
+func _on_tap() -> void:
+	var done := LevelManager.register_tap()
+	var taps := LevelManager.taps_this_level
+
+	_score_label.text = "Score: %d" % taps
+	_update_progress_bar(LevelManager.progress_ratio())
+
+	var is_milestone := (taps % 10 == 0)
+	if is_milestone:
+		_tap_label.text = "✦ Milestone! ✦"
+		_tap_label.add_theme_color_override("font_color", COLOR_GOLD)
+		_score_label.add_theme_color_override("font_color", COLOR_GOLD)
+		_trigger_flash(Color(1.0, 0.85, 0.2))
+		AudioManager.play_sfx_milestone()
+	else:
+		_tap_label.text = "Keep going!"
+		_tap_label.add_theme_color_override("font_color", Color(0.80, 0.70, 1.00))
+		_score_label.add_theme_color_override("font_color", Color.WHITE)
+		AudioManager.play_sfx_tap()
+
+	# Bounce-scale score card
+	if _tap_tween:
+		_tap_tween.kill()
+	_tap_tween = create_tween()
+	_tap_tween.tween_property(_score_card, "scale", Vector2(1.06, 1.06), 0.07)
+	_tap_tween.tween_property(_score_card, "scale", Vector2(1.00, 1.00), 0.10)
+
+	if done:
+		pass  # signal already handled via _on_level_completed
+
+# ── _process ──────────────────────────────────────────────────────────────────
+func _process(delta: float) -> void:
+	var vp := get_viewport_rect().size
+	for s in _stars:
+		var n: ColorRect = s["node"]
+		n.position.y += STAR_SPEED_BASE * _star_speed * s["speed"] * delta
+		if n.position.y > vp.y:
+			n.position.y = -n.size.y
+			n.position.x = randf_range(0, vp.x)
+
+	if _flash_timer > 0.0:
+		_flash_timer -= delta
+		_flash_rect.color.a = clampf(_flash_timer / 0.35, 0.0, 0.4)
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+func _spawn_stars() -> void:
+	var vp := get_viewport_rect().size
+	for _i in STAR_COUNT:
+		var sz := randf_range(1.5, 4.5)
+		var star := ColorRect.new()
+		star.color    = COLOR_STAR
+		star.size     = Vector2(sz, sz)
+		star.position = Vector2(randf_range(0, vp.x), randf_range(0, vp.y))
+		_star_layer.add_child(star)
+		_stars.append({"node": star, "speed": randf_range(0.5, 2.0)})
+
+func _trigger_flash(color: Color) -> void:
+	_flash_rect.color   = color
+	_flash_rect.color.a = 0.4
+	_flash_timer        = 0.35
+
+func _apply_bg_color(c: Color) -> void:
+	var tw := create_tween()
+	tw.tween_property(_bg, "color", c, 0.8)
+
+func _update_progress_bar(ratio: float) -> void:
+	var full_w: float = 340.0
+	_progress_bar.size.x = full_w * ratio
+	# Colour shifts gold as level nears completion
+	_progress_bar.color = COLOR_ACCENT.lerp(COLOR_GOLD, ratio)
+
+func _add_border_line(parent: Control, from: Vector2, to: Vector2, color: Color) -> void:
+	var line := Line2D.new()
+	line.add_point(from)
+	line.add_point(to)
+	line.default_color = color
+	line.width = 2.0
+	parent.add_child(line)
+
