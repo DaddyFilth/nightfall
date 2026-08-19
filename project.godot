@@ -20,3 +20,4 @@ enabled=PackedStringArray("res://addons/admob/plugin.cfg")
 GameData="*res://GameData.gd"
 AudioManager="*res://AudioManager.gd"
 LevelManager="*res://LevelManager.gd"
+AdManager="*res://AdManager.gd"
