@@ -16,7 +16,7 @@ mkdir -p build
 # Auto-increment version code
 CURRENT=$(grep "version/code=" export_presets.cfg | head -1 | cut -d= -f2)
 NEW=$((CURRENT + 1))
-sed -i "s/version/code=$CURRENT/version/code=$NEW/" export_presets.cfg
+sed -i "s|version/code=$CURRENT|version/code=$NEW|" export_presets.cfg
 echo "📦 Version: $NEW"
 
 git pull origin main
