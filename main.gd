@@ -2,7 +2,7 @@
 ## Drives the full game loop: start menu → intro → pre-level story → level play
 ## → post-level story → next level.  Delegates audio to AudioManager, level
 ## state to LevelManager, and narrative display to StoryPanel.
-extends Node2D
+extends Node3D
 
 # ── palette (local aliases for ergonomics) ───────────────────────────────────
 const COLOR_BG     := GameData.COLOR_BG
@@ -17,7 +17,7 @@ var _state: State = State.START_MENU
 
 # ── nodes ─────────────────────────────────────────────────────────────────────
 var _bg:           ColorRect
-var _star_layer:   Node2D
+var _star_layer:   Node3D
 var _flash_rect:   ColorRect
 var _story_panel:  Control   # StoryPanel instance
 var _start_menu:   Control   # StartMenu instance
@@ -62,7 +62,7 @@ func _build_background() -> void:
 	_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(_bg)
 
-	_star_layer = Node2D.new()
+	_star_layer = Node3D.new()
 	add_child(_star_layer)
 
 	_flash_rect = ColorRect.new()
