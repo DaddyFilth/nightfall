@@ -1,7 +1,7 @@
 ## main.gd  –  root scene controller
-## Drives the full game loop: intro → pre-level story → level play → post-level
-## story → next level.  Delegates audio to AudioManager, level state to
-## LevelManager, and narrative display to StoryPanel.
+## Drives the full game loop: start menu → intro → pre-level story → level play
+## → post-level story → next level.  Delegates audio to AudioManager, level
+## state to LevelManager, and narrative display to StoryPanel.
 extends Node2D
 
 # ── palette (local aliases for ergonomics) ───────────────────────────────────
@@ -12,14 +12,15 @@ const COLOR_CARD   := GameData.COLOR_CARD
 const COLOR_STAR   := GameData.COLOR_STAR
 
 # ── game-state machine ────────────────────────────────────────────────────────
-enum State { INTRO, PRE_STORY, PLAYING, POST_STORY, LEVEL_COMPLETE }
-var _state: State = State.INTRO
+enum State { START_MENU, INTRO, PRE_STORY, PLAYING, POST_STORY, LEVEL_COMPLETE }
+var _state: State = State.START_MENU
 
 # ── nodes ─────────────────────────────────────────────────────────────────────
 var _bg:           ColorRect
 var _star_layer:   Node2D
 var _flash_rect:   ColorRect
 var _story_panel:  Control   # StoryPanel instance
+var _start_menu:   Control   # StartMenu instance
 
 var _hud:          Control
 var _level_banner: Label
@@ -29,6 +30,7 @@ var _progress_bg:  ColorRect
 var _progress_bar: ColorRect
 var _tap_label:    Label
 var _level_label:  Label
+var _timer_label:  Label   # Time Attack countdown
 
 # ── star pool ─────────────────────────────────────────────────────────────────
 const STAR_COUNT     := 80
@@ -52,8 +54,9 @@ func _ready() -> void:
 	_spawn_stars()
 	_build_hud()
 	_build_story_panel()
+	_build_start_menu()
 	_connect_level_signals()
-	_run_intro()
+	_show_start_menu()
 
 # ── background layer ──────────────────────────────────────────────────────────
 func _build_background() -> void:
@@ -160,12 +163,35 @@ func _build_hud() -> void:
 	_tap_label.size = Vector2(400, 55)
 	_hud.add_child(_tap_label)
 
+	# ── Time Attack countdown (bottom-right, hidden by default) ───────────────
+	_timer_label = Label.new()
+	_timer_label.text = ""
+	_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_timer_label.add_theme_font_size_override("font_size", 28)
+	_timer_label.add_theme_color_override("font_color", GameData.COLOR_GOLD)
+	_timer_label.position = Vector2(vp.x - 160, vp.y - 60)
+	_timer_label.size = Vector2(140, 36)
+	_timer_label.hide()
+	_hud.add_child(_timer_label)
+
 # ── story panel ───────────────────────────────────────────────────────────────
 func _build_story_panel() -> void:
 	_story_panel = load("res://StoryPanel.gd").new()
 	add_child(_story_panel)
 	_story_panel.hide()
 	_story_panel.connect("dismissed", Callable(self, "_on_story_dismissed"))
+
+# ── start menu ────────────────────────────────────────────────────────────────
+func _build_start_menu() -> void:
+	_start_menu = load("res://StartMenu.gd").new()
+	add_child(_start_menu)
+	_start_menu.hide()
+	_start_menu.connect("start_game", Callable(self, "_on_start_game"))
+
+func _show_start_menu() -> void:
+	_state = State.START_MENU
+	_hud.modulate.a = 0.0
+	_start_menu.show()
 
 # ── level signals ─────────────────────────────────────────────────────────────
 func _connect_level_signals() -> void:
@@ -174,6 +200,11 @@ func _connect_level_signals() -> void:
 	LevelManager.connect("danger_triggered", Callable(self, "_on_danger_triggered"))
 
 # ── intro sequence ────────────────────────────────────────────────────────────
+func _on_start_game() -> void:
+	_start_menu.hide()
+	LevelManager.reset()
+	_run_intro()
+
 func _run_intro() -> void:
 	_state = State.INTRO
 	AudioManager.play_music(1.0)
@@ -216,6 +247,13 @@ func _on_level_started(data: Dictionary) -> void:
 	_level_banner.text = data.get("title", "")
 	_tap_label.text    = "Tap!"
 	_tap_label.add_theme_color_override("font_color", Color(0.80, 0.70, 1.00))
+
+	# Show countdown timer only in Time Attack mode
+	if GameData.selected_game_type == GameData.GameType.TIME_ATTACK:
+		_timer_label.show()
+		_timer_label.text = "⏱ 30"
+	else:
+		_timer_label.hide()
 
 	_apply_bg_color(data.get("bg_color", COLOR_BG))
 	_update_progress_bar(0.0)
@@ -294,6 +332,17 @@ func _process(delta: float) -> void:
 	if _flash_timer > 0.0:
 		_flash_timer -= delta
 		_flash_rect.color.a = clampf(_flash_timer / 0.35, 0.0, 0.4)
+
+	# Time Attack live countdown
+	if _state == State.PLAYING and \
+			GameData.selected_game_type == GameData.GameType.TIME_ATTACK:
+		var secs := ceili(LevelManager.time_attack_remaining)
+		_timer_label.text = "⏱ %d" % secs
+		if secs <= 5:
+			_timer_label.add_theme_color_override("font_color", GameData.COLOR_DANGER)
+		else:
+			_timer_label.add_theme_color_override("font_color", GameData.COLOR_GOLD)
+		_update_progress_bar(LevelManager.progress_ratio())
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 func _spawn_stars() -> void:
