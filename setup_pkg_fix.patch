@@ -1,0 +1,8 @@
+# Replace the pkg block in setup.sh with this:
+if command -v pkg &>/dev/null; then
+    # Allow root in Termux
+    mkdir -p $PREFIX/etc/apt/apt.conf.d/
+    echo "APT::Sandbox::User "root";" \
+        > $PREFIX/etc/apt/apt.conf.d/00-allow-root.conf
+    pkg update -y -q
+    pkg install -y -q wget unzip openjdk-17 git python android-tools

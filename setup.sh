@@ -24,7 +24,7 @@ warn() { echo -e "${YELLOW}[WARN]${NC}  $*"; }
 die()  { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
 
 # ── 0. system packages ────────────────────────────────────────
-log "Installing system packages..."
+# log "Installing system packages..."
 if command -v pkg &>/dev/null; then
     pkg update -y -q
     pkg install -y -q wget unzip openjdk-17 git python android-tools
