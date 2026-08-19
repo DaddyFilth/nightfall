@@ -10,3 +10,9 @@ config/name="Nightfall"
 config/features=PackedStringArray("4.3", "Mobile")
 config/icon="res://icon.svg"
 run/main_scene="res://Main.tscn"
+
+[autoload]
+
+GameData="*res://GameData.gd"
+AudioManager="*res://AudioManager.gd"
+LevelManager="*res://LevelManager.gd"
