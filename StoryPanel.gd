@@ -16,7 +16,6 @@ const TYPEWRITER_SPEED := 38   # characters per second
 
 # ── internal state ────────────────────────────────────────────────────────────
 var _full_text:     String = ""
-var _shown_chars:   int    = 0
 var _type_timer:    float  = 0.0
 var _typing_done:   bool   = false
 var _ready_to_dismiss: bool = false
@@ -86,12 +85,12 @@ func _ready() -> void:
 func show_story(level_title: String, body: String) -> void:
 	_title_lbl.text  = level_title
 	_full_text       = body
-	_shown_chars     = 0
 	_type_timer      = 0.0
 	_typing_done     = false
 	_ready_to_dismiss = false
 	_body_lbl.text   = ""
 	_hint_lbl.modulate.a = 0.0
+	_blink_timer     = 0.0
 	show()
 
 # ── processing ────────────────────────────────────────────────────────────────

@@ -168,9 +168,10 @@ func _build_ui() -> void:
 	# ── Start button ──────────────────────────────────────────────────────────
 	var start_y := df_y + 38 + GameData.DIFFICULTY_LABELS.size() * (btn_h + btn_gap) + 28
 	_start_btn = ColorRect.new()
-	_start_btn.color    = COLOR_ACCENT
-	_start_btn.position = Vector2(cx - 120, start_y)
-	_start_btn.size     = Vector2(240, 62)
+	_start_btn.color       = COLOR_ACCENT
+	_start_btn.position    = Vector2(cx - 120, start_y)
+	_start_btn.size        = Vector2(240, 62)
+	_start_btn.pivot_offset = Vector2(120, 31)   # scale from centre
 	add_child(_start_btn)
 
 	var start_lbl := Label.new()
