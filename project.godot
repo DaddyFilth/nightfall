@@ -1,0 +1,9 @@
+; Engine configuration file.
+[configuration]
+entry_point="res://Main.tscn"
+config_version=5
+
+[application]
+config/name="Nightfall"
+config/features=PackedStringArray("4.3", "Mobile")
+config/icon="res://icon.svg"
