@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://sbrakpuoo3rd"
-path="res://.godot/imported/NotoSansSC-Regular.otf-25bcd9be11d0d77c7ed6c5a1d9de9fc1.fontdata"
+path="res://.godot/imported/NotoSansSC-Regular.otf-2ad5e122508cdcbff38fc95909a8be1a.fontdata"
 
 [deps]
 
-source_file="res://addons/admob/assets/fonts/NotoSansSC-Regular.otf"
-dest_files=["res://.godot/imported/NotoSansSC-Regular.otf-25bcd9be11d0d77c7ed6c5a1d9de9fc1.fontdata"]
+source_file="res://android/plugins/admob/poing-godot-admob/addons/admob/assets/fonts/NotoSansSC-Regular.otf"
+dest_files=["res://.godot/imported/NotoSansSC-Regular.otf-2ad5e122508cdcbff38fc95909a8be1a.fontdata"]
 
 [params]
 
@@ -21,10 +21,8 @@ msdf_pixel_range=8
 msdf_size=48
 allow_system_fallback=true
 force_autohinter=false
-modulate_color_glyphs=false
 hinting=3
 subpixel_positioning=4
-keep_rounding_remainders=true
 oversampling=0.0
 Fallbacks=null
 fallbacks=[]
