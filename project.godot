@@ -11,6 +11,10 @@ config/features=PackedStringArray("4.3", "Mobile")
 config/icon="res://icon.svg"
 run/main_scene="res://Main.tscn"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/admob/plugin.cfg")
+
 [autoload]
 
 GameData="*res://GameData.gd"
