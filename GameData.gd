@@ -1,5 +1,6 @@
 ## GameData.gd  –  autoload singleton
-## Holds level descriptors, storyline beats, and palette constants.
+## Holds level descriptors, storyline beats, palette constants, and the
+## player's current game-type / difficulty selection.
 extends Node
 
 # ── Palette (shared across all scripts) ─────────────────────────────────────
@@ -10,6 +11,27 @@ const COLOR_CARD   := Color(0.10, 0.08, 0.22, 0.92)
 const COLOR_STAR   := Color(0.85, 0.85, 1.00, 0.80)
 const COLOR_DANGER := Color(1.00, 0.30, 0.30, 1.0)
 const COLOR_CYAN   := Color(0.20, 0.90, 0.95, 1.0)
+
+# ── Game-type constants ───────────────────────────────────────────────────────
+enum GameType { STORY, ENDLESS, TIME_ATTACK }
+const GAME_TYPE_LABELS := ["Story", "Endless", "Time Attack"]
+
+# ── Difficulty constants ──────────────────────────────────────────────────────
+enum Difficulty { EASY, NORMAL, HARD }
+const DIFFICULTY_LABELS := ["Easy", "Normal", "Hard"]
+
+# Multipliers applied to taps_needed for each difficulty.
+# Easy   = 0.6×  (fewer taps required)
+# Normal = 1.0×  (vanilla)
+# Hard   = 1.6×  (more taps required)
+const DIFFICULTY_TAP_MULT := [0.6, 1.0, 1.6]
+
+# Multipliers applied to star_speed for each difficulty.
+const DIFFICULTY_SPEED_MULT := [0.8, 1.0, 1.3]
+
+# ── Active session settings (written by StartMenu, read by LevelManager) ──────
+var selected_game_type: int = GameType.STORY
+var selected_difficulty: int = Difficulty.NORMAL
 
 # ── Level descriptor structure ───────────────────────────────────────────────
 # Each entry:
@@ -83,7 +105,8 @@ const LEVELS: Array = [
 
 func get_level(index: int) -> Dictionary:
 	if index < LEVELS.size():
-		return LEVELS[index]
+		var entry: Dictionary = LEVELS[index].duplicate()
+		return _apply_difficulty(entry)
 	# Endless mode: repeat last entry with escalating difficulty
 	var base: Dictionary = LEVELS[LEVELS.size() - 1].duplicate()
 	var extra := index - LEVELS.size() + 1
@@ -95,4 +118,10 @@ func get_level(index: int) -> Dictionary:
 	base["danger_at"]   = 12 + extra * 2
 	base["story_pre"]   = "The darkness deepens.\nLevel %d — keep the light burning." % (index + 1)
 	base["story_post"]  = "Another night conquered.\nThe flame endures."
-	return base
+	return _apply_difficulty(base)
+
+func _apply_difficulty(data: Dictionary) -> Dictionary:
+	var d := selected_difficulty
+	data["taps_needed"] = max(1, int(data["taps_needed"] * DIFFICULTY_TAP_MULT[d]))
+	data["star_speed"]  = data["star_speed"] * DIFFICULTY_SPEED_MULT[d]
+	return data
