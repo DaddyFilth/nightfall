@@ -242,7 +242,9 @@ func _build_start_menu() -> void:
 
 func _show_start_menu() -> void:
 	_state = State.START_MENU
+	LevelManager.reset()
 	_hud.modulate.a = 0.0
+	_story_panel.hide()
 	_game_over_panel.hide()
 	_start_menu.show()
 
@@ -297,6 +299,7 @@ func _on_story_dismissed() -> void:
 # ── Time Attack result screen ─────────────────────────────────────────────────
 func _show_time_attack_result() -> void:
 	_state = State.GAME_OVER
+	_story_panel.hide()
 	var score := LevelManager.taps_this_level
 	var title_lbl := _game_over_panel.get_node("TitleLabel") as Label
 	var body_lbl  := _game_over_panel.get_node("BodyLabel")  as Label
@@ -330,8 +333,8 @@ func _on_level_started(data: Dictionary) -> void:
 
 func _on_level_completed(_data: Dictionary) -> void:
 	# Guard: ignore duplicate signals (e.g. Time Attack fires while await is live)
-	if _state == State.LEVEL_COMPLETE or _state == State.POST_STORY \
-			or _state == State.GAME_OVER:
+	if _state == State.LEVEL_COMPLETE or _state == State.PRE_STORY \
+			or _state == State.POST_STORY or _state == State.GAME_OVER:
 		return
 	_state = State.LEVEL_COMPLETE
 	AudioManager.play_sfx_level_up()
@@ -347,10 +350,25 @@ func _on_danger_triggered(_taps_left: int) -> void:
 	_tap_label.add_theme_color_override("font_color", GameData.COLOR_DANGER)
 
 func _advance_to_next_level() -> void:
+	# Story mode ends after all chapters are complete.
+	if GameData.selected_game_type == GameData.GameType.STORY and \
+			LevelManager.current_index >= GameData.LEVELS.size() - 1:
+		AudioManager.stop_music()
+		_show_credits()
+		return
 	var new_data := LevelManager.advance()
 	AudioManager.set_music_pitch(new_data.get("music_pitch", 1.0))
 	_update_progress_bar(0.0)
 	_show_pre_story()
+
+# Show a simple end-of-story credits screen then return to menu.
+func _show_credits() -> void:
+	_state = State.GAME_OVER
+	var title_lbl := _game_over_panel.get_node("TitleLabel") as Label
+	var body_lbl  := _game_over_panel.get_node("BodyLabel")  as Label
+	title_lbl.text = "✦  Dawn Breaks  ✦"
+	body_lbl.text  = "You have survived the Nightfall.\n\nThank you for playing."
+	_game_over_panel.show()
 
 # ── tap handling ──────────────────────────────────────────────────────────────
 func _input(event: InputEvent) -> void:
