@@ -1,17 +1,12 @@
 ; Engine configuration file.
-run/main_scene="res://Main.tscn"
-[configuration]
-run/main_scene="res://Main.tscn"
-entry_point="res://Main.tscn"
-run/main_scene="res://Main.tscn"
+; It's best edited using the editor UI and not directly,
+; since the properties and their values can change.
+
 config_version=5
-run/main_scene="res://Main.tscn"
 
 [application]
-run/main_scene="res://Main.tscn"
+
 config/name="Nightfall"
-run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.3", "Mobile")
-run/main_scene="res://Main.tscn"
 config/icon="res://icon.svg"
 run/main_scene="res://Main.tscn"

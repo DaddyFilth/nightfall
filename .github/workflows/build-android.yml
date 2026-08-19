@@ -43,7 +43,7 @@ jobs:
 
       - name: Patch export_presets.cfg
         env:
-          KEYSTORE_PATH: /root/mygame.keystore
+          KEYSTORE_PATH: ${{ env.HOME }}/mygame.keystore
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
           python3 - << 'PYEOF'
