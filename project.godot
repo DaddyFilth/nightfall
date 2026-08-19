@@ -1,17 +1,33 @@
 ; Engine configuration file.
+AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
+AdManager="*res://AdManager.gd"
 [configuration]
+AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
+AdManager="*res://AdManager.gd"
 entry_point="res://Main.tscn"
+AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
+AdManager="*res://AdManager.gd"
 config_version=5
+AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
+AdManager="*res://AdManager.gd"
 
 [application]
+AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
+AdManager="*res://AdManager.gd"
 config/name="Nightfall"
+AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
+AdManager="*res://AdManager.gd"
 config/features=PackedStringArray("4.3", "Mobile")
+AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
+AdManager="*res://AdManager.gd"
 config/icon="res://icon.svg"
+AdManager="*res://AdManager.gd"
 run/main_scene="res://Main.tscn"
+AdManager="*res://AdManager.gd"
