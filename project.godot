@@ -1,19 +1,19 @@
 ; Engine configuration file.
 ; It's best edited using the editor UI and not directly,
-; since the properties and their values can change.
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
 [application]
 
 config/name="Nightfall"
+run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.3", "Mobile")
 config/icon="res://icon.svg"
-run/main_scene="res://Main.tscn"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/admob/plugin.cfg")
 
 [autoload]
 
@@ -21,3 +21,11 @@ GameData="*res://GameData.gd"
 AudioManager="*res://AudioManager.gd"
 LevelManager="*res://LevelManager.gd"
 AdManager="*res://AdManager.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/admob/plugin.cfg")
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://addons/admob/gdscript/sample/translations/admob_sample.en.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.pt_BR.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.es.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.zh_CN.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.ja.translation")
