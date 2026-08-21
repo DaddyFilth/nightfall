@@ -422,6 +422,9 @@ func _fire_projectile(origin: Vector3, direction: Vector3) -> void:
 	audio_layer.play_cue("projectile_fire")
 	var projectile := NightfallProjectile.new()
 	add_child(projectile)
+	var active_player := get_node_or_null("NightfallPlayer") as NightfallPlayer
+	if active_player:
+		projectile.damage = active_player.primary_projectile_damage()
 	projectile.fire(origin, direction)
 	var result: Dictionary = projectile.resolve_segment(18.0)
 	if result["kind"] == "target":

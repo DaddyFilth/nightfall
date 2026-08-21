@@ -176,3 +176,7 @@
 - [x] Verify GitHub synchronization and add a current Android APK artifact to the repository if one is available from the managed build workflow; the available EAS APK is from an earlier build and a current matching artifact still requires a managed build.
 - [ ] Synchronize the current Blood & Brass source to the corrected DaddyFilth/nightfall repository target and verify its APK-release handoff state.
 - [ ] Compare, consolidate, validate, and synchronize the related DaddyFilth/nightfall and DaddyFilth/nightfall-blood-hunt projects before deleting only the user-confirmed duplicate repository.
+- [x] Define and implement six distinct playable first-person vampire-pirate classes with original weapons and fighting styles for the 1500s gothic-steampunk campaign.
+- [x] Retain the supplied image only as the application icon; exclude it from Blood & Brass world graphics, class visuals, and game assets.
+- [x] Build an open, explorable gothic-steampunk vampire-pirate world with district traversal, optional discoveries, and campaign-safe sequential story gates.
+- [x] Resolve all active Godot parse errors and revalidate every native headless harness before continuing feature work.

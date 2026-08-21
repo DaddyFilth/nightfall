@@ -22,7 +22,7 @@ var mission_finished := false
 var victory := false
 var veil_cooldown_remaining := 0.0
 var boss_attack_remaining := 2.6
-var status_message := "CLEAR THE WHARF // WHEEL-LOCK AUTO-AIMS THE NEAREST THREAT"
+var status_message := "CLEAR THE WHARF // SELECTED CLASS LOADOUT READY"
 var status_message_remaining := 6.0
 
 var player_vitality_label: Label
@@ -75,6 +75,7 @@ func _ready() -> void:
 	_build_level_signature()
 	_build_traversal_set_piece()
 	if player:
+		status_message = "%s // %s READY" % [player.class_callsign(), player.class_primary_weapon()]
 		player.ability_requested.connect(_on_veil_requested)
 		player.enemy_hit_resolved.connect(_on_player_hit)
 		player.fire_requested.connect(_restart_after_resolution)
@@ -168,19 +169,21 @@ func _on_veil_requested() -> void:
 	if veil_cooldown_remaining > 0.0:
 		_set_status("VEIL RECHARGING // %.1fs" % veil_cooldown_remaining, 1.0)
 		return
-	veil_cooldown_remaining = VEIL_COOLDOWN_SECONDS
-	player.move_speed = 7.0
-	get_tree().create_timer(0.36).timeout.connect(func() -> void:
+	veil_cooldown_remaining = player.class_cooldown()
+	var base_speed := float(player.class_profile.get("move_speed", 5.2))
+	var ability_duration := player.class_ability_duration()
+	player.move_speed = player.class_ability_speed()
+	get_tree().create_timer(ability_duration).timeout.connect(func() -> void:
 		if player and not mission_finished:
-			player.move_speed = 5.2
+			player.move_speed = base_speed
 	)
 	var target := _nearest_damage_target(player.global_position)
-	if target and player.global_position.distance_to(target.global_position) <= 3.7:
-		var result: Dictionary = target.get_meta("nightfall_damage_target").take_projectile_hit(55, player.global_position)
+	if target and player.global_position.distance_to(target.global_position) <= player.class_ability_range():
+		var result: Dictionary = target.get_meta("nightfall_damage_target").take_projectile_hit(player.class_ability_damage(), player.global_position)
 		_process_damage_result(result)
-		_set_status("CUTLASS VEIL // BRASSWAKE RIPOSTE", 1.35)
+		_set_status("%s // %s" % [player.class_ability_name(), player.class_callsign()], 1.35)
 	else:
-		_set_status("CUTLASS VEIL // CLOSE THE DISTANCE", 1.35)
+		_set_status("%s // CLOSE THE DISTANCE" % player.class_ability_name(), 1.35)
 
 func _fire_projectile(origin: Vector3, direction: Vector3) -> void:
 	if mission_finished:
@@ -188,6 +191,7 @@ func _fire_projectile(origin: Vector3, direction: Vector3) -> void:
 	audio_layer.play_cue("projectile_fire")
 	var projectile := NightfallProjectile.new()
 	add_child(projectile)
+	projectile.damage = player.primary_projectile_damage() if player else projectile.damage
 	projectile.fire(origin, direction)
 	var result: Dictionary = projectile.resolve_segment(22.0)
 	if result["kind"] == "target":
@@ -306,7 +310,7 @@ func _build_combat_hud() -> void:
 	var player_frame := _hud_frame(Vector2(24, 20), Vector2(356, 80))
 	player_frame.name = "CaptainStatusFrame"
 	layer.add_child(player_frame)
-	player_vitality_label = _hud_label("CAPTAIN // VITALITY", Vector2(14, 10), 13, Color("F5F0E9"))
+	player_vitality_label = _hud_label("DUELIST // VITALITY", Vector2(14, 10), 13, Color("F5F0E9"))
 	player_frame.add_child(player_vitality_label)
 	player_vitality_bar = ProgressBar.new()
 	player_vitality_bar.name = "CaptainVitalityBar"
@@ -317,7 +321,7 @@ func _build_combat_hud() -> void:
 	player_vitality_bar.show_percentage = false
 	player_vitality_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	player_frame.add_child(player_vitality_bar)
-	veil_label = _hud_label("VEIL // READY", Vector2(14, 54), 10, Color("B8A4FF"))
+	veil_label = _hud_label("ABILITY // READY", Vector2(14, 54), 10, Color("B8A4FF"))
 	player_frame.add_child(veil_label)
 	kill_label = _hud_label("WHARF // 0 / 4", Vector2(222, 54), 10, Color("E7CB63"))
 	player_frame.add_child(kill_label)
@@ -380,7 +384,7 @@ func _build_combat_hud() -> void:
 	fps_reticle.size = Vector2(16, 30)
 	fps_reticle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	fps_reticle.add_theme_font_size_override("font_size", 26)
-	fps_reticle.add_theme_color_override("font_color", Color("D9F5EA"))
+	fps_reticle.add_theme_color_override("font_color", player.class_accent() if player else Color("D9F5EA"))
 	fps_reticle.add_theme_color_override("font_outline_color", Color("071012"))
 	fps_reticle.add_theme_constant_override("outline_size", 4)
 	fps_reticle.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -655,10 +659,10 @@ func _hud_label(text_value: String, position_value: Vector2, font_size: int, col
 func _update_combat_hud() -> void:
 	if not player_vitality_label or not player:
 		return
-	player_vitality_label.text = "CAPTAIN // VITALITY %s / %s" % [player.vitality, player.max_vitality]
+	player_vitality_label.text = "%s // VITALITY %s / %s" % [player.class_callsign(), player.vitality, player.max_vitality]
 	player_vitality_bar.max_value = player.max_vitality
 	player_vitality_bar.value = player.vitality
-	veil_label.text = "VEIL // READY" if veil_cooldown_remaining <= 0.0 else "VEIL // %.1fs" % veil_cooldown_remaining
+	veil_label.text = "%s // READY" % player.class_ability_name() if veil_cooldown_remaining <= 0.0 else "%s // %.1fs" % [player.class_ability_name(), veil_cooldown_remaining]
 	kill_label.text = "WHARF // %s / %s" % [kills, enemies.size()]
 	if boss_active and conductor and not conductor.is_defeated:
 		objective_label.text = "LEVEL %02d // %s // BREAK THE CORE" % [story_mission_id, campaign_title]

@@ -2,6 +2,7 @@ class_name NightfallPlayer
 extends CharacterBody3D
 
 const NightfallInput = preload("res://scripts/gameplay/nightfall_input.gd")
+const FpsClassRoster = preload("res://scripts/gameplay/fps_class_roster.gd")
 
 const SOLID_LAYER := 1
 const PLAYER_LAYER := 2
@@ -45,6 +46,8 @@ const MAX_AIM_SENSITIVITY := 2.0
 const DEFAULT_AIM_SENSITIVITY := 1.0
 var aim_sensitivity := DEFAULT_AIM_SENSITIVITY
 var aim_invert_y := false
+var class_id := FpsClassRoster.DEFAULT_CLASS_ID
+var class_profile: Dictionary = FpsClassRoster.profile(FpsClassRoster.DEFAULT_CLASS_ID)
 signal fire_requested(origin: Vector3, direction: Vector3)
 signal ability_requested
 signal dodge_started
@@ -56,6 +59,7 @@ signal aim_preferences_changed(sensitivity: float, invert_y: bool)
 signal ads_changed(is_aiming: bool)
 signal reload_started
 signal reload_finished
+signal class_changed(profile: Dictionary)
 
 func _ready() -> void:
 	name = "NightfallPlayer"
@@ -70,6 +74,7 @@ func _ready() -> void:
 	add_child(body_shape)
 	_build_bloodwake_visual()
 	_build_first_person_rig()
+	set_combat_class(FpsClassRoster.selected_class_id(), false)
 	last_safe_position = global_position
 	vitality = max_vitality
 	NightfallInput.ensure_default_actions()
@@ -109,7 +114,7 @@ func fire_wheel_lock() -> bool:
 	if is_reloading():
 		return false
 	wheel_lock_recoil_remaining = WHEEL_LOCK_RECOIL_DURATION
-	wheel_lock_reload_remaining = WHEEL_LOCK_RELOAD_DURATION
+	wheel_lock_reload_remaining = float(class_profile.get("reload_duration", WHEEL_LOCK_RELOAD_DURATION))
 	weapon_animation_started.emit("wheel_lock")
 	weapon_animation_started.emit("wheel_lock_reload")
 	reload_started.emit()
@@ -120,7 +125,7 @@ func fire_wheel_lock() -> bool:
 	return true
 
 func begin_cutlass_swing() -> void:
-	cutlass_swing_remaining = CUTLASS_SWING_DURATION
+	cutlass_swing_remaining = float(class_profile.get("melee_duration", CUTLASS_SWING_DURATION))
 	weapon_animation_started.emit("cutlass")
 	ability_requested.emit()
 
@@ -136,7 +141,8 @@ func _update_weapon_animations(delta: float) -> void:
 				weapon_animation_finished.emit("wheel_lock")
 		elif wheel_lock_reload_remaining > 0.0:
 			wheel_lock_reload_remaining = max(0.0, wheel_lock_reload_remaining - delta)
-			var reload_progress := 1.0 - wheel_lock_reload_remaining / WHEEL_LOCK_RELOAD_DURATION
+			var reload_duration := float(class_profile.get("reload_duration", WHEEL_LOCK_RELOAD_DURATION))
+			var reload_progress := 1.0 - wheel_lock_reload_remaining / reload_duration
 			var reload_arc := sin(reload_progress * PI)
 			wheel_lock_rig.position = _wheel_lock_base_position() + Vector3(0.09 * reload_arc, -0.11 * reload_arc, 0.10 * reload_arc)
 			wheel_lock_rig.rotation_degrees = Vector3(24.0 * reload_arc, 0.0, -31.0 * reload_arc)
@@ -151,7 +157,8 @@ func _update_weapon_animations(delta: float) -> void:
 	if cutlass_rig:
 		if cutlass_swing_remaining > 0.0:
 			cutlass_swing_remaining = max(0.0, cutlass_swing_remaining - delta)
-			var swing_progress := 1.0 - cutlass_swing_remaining / CUTLASS_SWING_DURATION
+			var melee_duration := float(class_profile.get("melee_duration", CUTLASS_SWING_DURATION))
+			var swing_progress := 1.0 - cutlass_swing_remaining / melee_duration
 			var swing_angle := 30.0 if swing_progress < 0.32 else lerpf(30.0, -104.0, (swing_progress - 0.32) / 0.68)
 			cutlass_rig.rotation_degrees = Vector3(0, 0, swing_angle)
 			if cutlass_swing_remaining <= 0.0:
@@ -274,6 +281,49 @@ func save_aim_preferences() -> void:
 
 func get_fps_camera() -> Camera3D:
 	return fps_camera
+
+func set_combat_class(requested_class_id: String, persist: bool = true) -> void:
+	class_id = FpsClassRoster.normalized_id(requested_class_id)
+	class_profile = FpsClassRoster.profile(class_id)
+	move_speed = float(class_profile.get("move_speed", 5.2))
+	max_vitality = int(class_profile.get("max_vitality", 100))
+	vitality = min(vitality, max_vitality)
+	if persist:
+		FpsClassRoster.save_selected_class(class_id)
+	class_changed.emit(class_profile.duplicate(true))
+
+func primary_projectile_damage() -> int:
+	return int(class_profile.get("primary_damage", 25))
+
+func class_ability_damage() -> int:
+	return int(class_profile.get("ability_damage", 55))
+
+func class_ability_range() -> float:
+	return float(class_profile.get("ability_range", 3.7))
+
+func class_ability_speed() -> float:
+	return float(class_profile.get("ability_speed", 7.0))
+
+func class_ability_duration() -> float:
+	return float(class_profile.get("ability_duration", 0.36))
+
+func class_cooldown() -> float:
+	return float(class_profile.get("cooldown", 6.0))
+
+func class_label() -> String:
+	return str(class_profile.get("label", "BLOODWAKE CAPTAIN"))
+
+func class_callsign() -> String:
+	return str(class_profile.get("callsign", "DUELIST"))
+
+func class_primary_weapon() -> String:
+	return str(class_profile.get("primary_weapon", "BRASSWAKE WHEEL-LOCK"))
+
+func class_ability_name() -> String:
+	return str(class_profile.get("ability_name", "MISTWAKE RIPOSTE"))
+
+func class_accent() -> Color:
+	return class_profile.get("accent", Color("C7973A")) as Color
 
 func is_first_person() -> bool:
 	return is_instance_valid(fps_camera)
