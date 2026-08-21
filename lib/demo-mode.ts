@@ -1,0 +1,16 @@
+export type DemoStageId = "briefing" | "combat" | "campaign" | "modes" | "windup" | "conductor" | "collection";
+export type DemoStage = { id: DemoStageId; eyebrow: string; title: string; detail: string; color: string; metricLabel: string; metric: string; progress: number; route: string; durationMs: number };
+
+export const demoStages: DemoStage[] = [
+  { id: "briefing", eyebrow: "BLOODWAKE HARBOR // LOCAL BUILD", title: "THE HUNT BEGINS", detail: "A self-contained replay is loading. No player account, match queue, store call, or network connection is created.", color: "#4A877A", metricLabel: "CLEARANCE", metric: "04", progress: 6, route: "/", durationMs: 1900 },
+  { id: "combat", eyebrow: "BLOOD HUNT // AUTO PLAY", title: "THE CAPTAIN ENGAGES", detail: "The local combat loop demonstrates target pressure, rigging-leap recovery, blood-shard scoring, and vampire-captain ability feedback without requiring touch input.", color: "#B68A39", metricLabel: "HUNT RESULT", metric: "04 TARGETS // 860 SHARDS", progress: 24, route: "/hunt", durationMs: 2600 },
+  { id: "campaign", eyebrow: "CAMPAIGN // BRANCH MEMORY", title: "THE ROUTE REMEMBERS", detail: "Ashes Below establishes the breach. Blackout Protocol preserves a route decision that changes the Observatory’s entry context and cosmetic reward.", color: "#D93056", metricLabel: "CAMPAIGN PATH", metric: "LAST PLATFORM", progress: 42, route: "/campaign", durationMs: 2600 },
+  { id: "modes", eyebrow: "MULTIPLAYER // LOCAL RULES", title: "THREE WAYS TO BOARD", detail: "Free-for-All, Team Deathmatch, and Capture the Flag each retain distinct goals and authority-owned local rule simulation boundaries.", color: "#4A877A", metricLabel: "MODE ROTATION", metric: "FFA → TDM → CTF", progress: 57, route: "/modes", durationMs: 2500 },
+  { id: "windup", eyebrow: "OBSERVATORY // INCOMING", title: "CONDUCTOR WINDS UP", detail: "The Conductor’s brightening ring signals an incoming strike. The demo pauses the attack long enough to make the dodge window and escape direction legible.", color: "#E7CB63", metricLabel: "ATTACK READOUT", metric: "BEACON BREAK // DODGE", progress: 71, route: "/observatory", durationMs: 2400 },
+  { id: "conductor", eyebrow: "OBSERVATORY // RESOLUTION", title: "CORE UNDER PRESSURE", detail: "Projectile damage lowers the Conductor vitality bar through its phase thresholds. A missed dodge produces a bounded knockback response; a clean dodge avoids both damage and impulse.", color: "#D93056", metricLabel: "CONDUCTOR VITALITY", metric: "135 / 360 // PHASE 3", progress: 86, route: "/observatory", durationMs: 2600 },
+  { id: "collection", eyebrow: "PROFILE // COSMETIC ONLY", title: "CIVIC WAYFINDER EARNED", detail: "The route resolves into a cosmetic-only title and banner. Equipment is stored on the device and never changes damage, vitality, matchmaking, or progression power.", color: "#3DE6E6", metricLabel: "EQUIPPED", metric: "TITLE + BANNER", progress: 100, route: "/profile", durationMs: 3200 },
+];
+
+export function clampDemoStage(index: number): number { return Math.max(0, Math.min(Math.floor(index), demoStages.length - 1)); }
+export function demoStageAt(index: number): DemoStage { return demoStages[clampDemoStage(index)]; }
+export function nextDemoStage(index: number): number { return Math.min(clampDemoStage(index) + 1, demoStages.length - 1); }

@@ -1,0 +1,26 @@
+; NIGHTFALL: BLOOD HUNT — Godot 4 multiplayer foundation
+; This project contains the authoritative gameplay contract that the Expo prototype does not execute.
+config_version=5
+
+[application]
+config/name="NIGHTFALL: BLOOD HUNT"
+run/main_scene="res://scenes/campaign_hub.tscn"
+
+[display]
+
+[display/window]
+size/viewport_width=1280
+size/viewport_height=720
+size/window_width_override=1280
+size/window_height_override=720
+stretch/mode="canvas_items"
+handheld/orientation=0
+
+[autoload]
+MatchHost="*res://scripts/net/match_host.gd"
+
+[network]
+limits/multiplayer/max_players=8
+
+[rendering]
+renderer/rendering_method="gl_compatibility"

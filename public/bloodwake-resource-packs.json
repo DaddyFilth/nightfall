@@ -1,0 +1,8 @@
+{
+  "schema": "bloodwake-resource-packs.v1",
+  "publishedAt": "2026-08-20T08:20:00Z",
+  "packs": {
+    "cinematic_audio": { "version": "1.1.0", "release": "Captain’s Log voice archive" },
+    "harbor_art_hd": { "version": "1.1.0", "release": "Brasswake high-resolution harbor study" }
+  }
+}

@@ -1,0 +1,178 @@
+# Project TODO
+
+- [x] Create original NIGHTFALL: BLOOD HUNT visual identity and app branding.
+- [x] Build the Eclipse Gate dashboard and main navigation.
+- [x] Implement Blood Hunt offline setup with subclass and arena selection.
+- [x] Implement a deterministic touch-first combat vertical slice with targets, score, vitality, shards, dash, and subclass ability feedback.
+- [x] Implement match debrief, rematch, and campaign briefing flows.
+- [x] Build Arsenal, subclass dossiers, and original weapon overview.
+- [x] Build accessibility controls and persist local settings.
+- [x] Build privacy and entitlement education surfaces without live ads, payment collection, or production entitlement claims.
+- [x] Add developer documentation describing scope, architecture, gameplay, and production integration boundaries.
+- [x] Add automated tests for core state and settings persistence.
+- [x] Verify type checking and the native app’s primary flows.
+- [x] Define Godot-compatible online combat transport, authority, lobby, replication, and disconnect contracts.
+- [x] Add production entitlement, receipt-validation, consent, and advertising integration boundaries with no mock-production crossover.
+- [x] Expand Ashes Below into multi-stage mission progression with save checkpoints, elite encounter, and a multi-phase Conductor boss simulation.
+- [x] Surface online, entitlement, consent, and production-readiness states clearly in the mobile app.
+- [x] Add tests and activation documentation for the new production foundation.
+- [x] Add an extensible multiplayer mode model and selection interface for Free-for-All, Team Deathmatch, Capture the Flag, and future mode variants.
+- [x] Keep all current multiplayer, billing, consent, and advertising behavior secret-free and fail-closed; document that native platform activation requires future store-console configuration rather than an in-app substitute.
+- [x] Implement and locally validate the Godot ENet LAN transport harness without claiming Internet P2P readiness.
+- [x] Implement offline local Team Deathmatch and Capture the Flag rule simulations with authority-owned objectives and scoring.
+- [x] Build original procedural 3D arena geometry, stylized enemy presentation, and simple original animation states for the Godot vertical slice.
+- [x] Add local validation documentation and automated tests for the expanded LAN and game-mode foundation.
+- [x] After completing LAN transport, local team modes, and 3D presentation work, add scripted cinematic interludes between single-player checkpoints with a timeline and contextual story events.
+- [x] Implement collision-aware Godot player movement, including solid arena collision and validated movement constraints.
+- [x] Implement projectile spawning, collision detection, hit resolution, and deterministic damage feedback.
+- [x] Create a second branching campaign mission with locally persisted player decisions and multiple objective paths.
+- [x] Replace primitive Hollowed presentation with original textured meshes and authored idle, pursuit, attack, hit, and dissolve animation states.
+- [x] Add native Godot harnesses, mobile tests, and production-boundary documentation for the expanded vertical slice.
+- [x] Implement real local touch and gamepad input mappings for Godot movement, aim, fire, and ability controls.
+- [x] Create the Observatory convergence mission that reads and contextualizes the saved Blackout Protocol branch.
+- [x] Add a small original local audio layer for impacts, Hollowed states, and checkpoint cinematic transitions.
+- [x] Add native and mobile validation coverage plus documented boundaries for the input, mission, and audio expansion.
+- [x] Implement a mobile control-remapping and sensitivity preferences screen with local persistence.
+- [x] Add subtitle and vibration accessibility preferences for every local audio cue.
+- [x] Build a Godot Observatory 3D arena with distinct Last Platform and Following Static branch-entry geometry.
+- [x] Add validation coverage and production-boundary documentation for the controls, accessibility, and Observatory-arena expansion.
+- [x] Define and validate an Expo-to-Godot local preference handoff payload for a future signed mobile export.
+- [x] Implement individual gamepad button remap capture and local persistence for primary actions.
+- [x] Implement branch-specific Observatory boss mechanics and local non-pay-to-win completion rewards.
+- [x] Add validation and signed-build boundary documentation for the preference handoff, gamepad capture, and Observatory boss expansion.
+- [x] Implement and validate a platform-safe local preference file bridge blueprint for a future signed Godot mobile export.
+- [x] Add visual Godot gamepad rebinding prompts, conflict detection, and explicit binding replacement handling.
+- [x] Connect player projectiles to the Observatory Conductor’s live hurtbox, damage response, and phase telegraph presentation.
+- [x] Add validation coverage and activation-boundary documentation for the bridge, rebinding, and live Conductor combat expansion.
+- [x] Define and validate native iOS and Android preference-bridge adapter contracts for future signed builds.
+- [x] Implement Conductor attack hitboxes, movement behavior, and player dodge-window mechanics with deterministic local validation.
+- [x] Add visible device-local profile inventory presentation for earned Observatory cosmetic rewards.
+- [x] Add validation coverage and signed-device activation documentation for the native adapter, boss combat, and inventory expansion.
+- [x] Commit and push the current validated NIGHTFALL foundation to the connected Git repository.
+- [x] Create build-ready Android plugin and iOS framework project scaffolds with native-toolchain build guidance.
+- [x] Add Conductor visual windups, knockback resolution, and boss health feedback in Godot and mobile Observatory surfaces.
+- [x] Let players equip one earned cosmetic title and one earned banner with device-local persistence in Profile.
+- [x] Create a fully functional guided demo mode accessible from the home screen.
+- [x] Validate the expanded mobile and Godot implementation, checkpoint it, and push the final commit.
+- [x] Define a cohesive dark gothic-steampunk 1500s pirate-vampire art direction for the mobile and Godot experience.
+- [x] Create original pirate-vampire visual assets for the home, campaign, demo, profile, and game presentation surfaces.
+- [x] Apply the new visual identity throughout the mobile app without changing local-only gameplay or fair-play boundaries.
+- [x] Apply the new environment and character presentation to the Godot vertical slice.
+- [x] Validate the visual re-theme, checkpoint the project, and push the updated private repository commit.
+- [x] Assess existing atmospheric presentation, story cinematics, accessibility, and Godot combat animation systems.
+- [x] Add animated sails, sea fog, and spray effects across Brasswake mobile and Godot presentation surfaces.
+- [x] Create device-local voiced Captain’s Log cinematics with subtitle-first accessibility and explicit playback controls.
+- [x] Build readable cutlass and wheel-lock combat animations with Godot regression coverage.
+- [x] Validate the animated Blood & Brass expansion, checkpoint it, and push the updated private repository commit.
+- [x] Restore compact bundled Captain’s Log playback and save the validated animated expansion.
+- [x] Define the player-facing post-install resource-pack delivery choices and content boundaries.
+- [x] Implement the selected downloadable resource-pack manifest, cache, controls, and offline states.
+- [x] Validate the resource-pack expansion, checkpoint it, and push the updated private repository commit.
+- [x] Repair the interrupted Expo Speech dependency metadata so production installs remain reproducible.
+- [x] Add an optional post-install Captain’s Log cinematic-audio pack with explicit player confirmation.
+- [x] Add a resource download manager with size, retry, cancellation, cache, and offline-ready states.
+- [x] Add a Wi‑Fi-only high-resolution Brasswake harbor-art pack with clear network consent.
+- [x] Pull the configured repository before finalizing, then commit and push the validated resource-pack expansion.
+- [x] Assess the current post-install pack state and cache flow for storage, version, and gallery extensions.
+- [x] Add resource-pack versions, player-readable release notes, and real device storage calculations.
+- [x] Add an in-game gallery for installed high-resolution Brasswake harbor art with offline-safe empty states.
+- [x] Validate the content-library expansion, checkpoint it, and push the updated private repository commit.
+- [x] Assess the existing content locker and harbor gallery for favorite, caption, update-check, and storage-warning extensions.
+- [x] Add device-local harbor-art favorites, captions, and gallery presentation controls.
+- [x] Add explicit Wi‑Fi-only update checks and storage-budget warnings before content transfers.
+- [x] Validate the content-library controls expansion, checkpoint it, and push the updated private repository commit.
+- [x] Restore the active workspace to the latest saved content-library checkpoint and verify its repository baseline before final delivery.
+- [x] Reconcile all completed content-library changes, validate them, and perform a final Git pull, commit, and push.
+- [x] Assess Godot scene entry points and existing gameplay components for a graphical main loop.
+- [x] Build a playable Brasswake combat scene with dockyard visuals, animated combat actors, boss encounter, HUD, and touch controls.
+- [x] Set the graphical Godot combat scene as the native vertical-slice entry point and add headless assembly validation.
+- [x] Add a mobile Play Game screen and home-screen entry that explains and routes to the standalone native Godot slice.
+- [x] Validate the graphical gameplay expansion, checkpoint it, and synchronize the completed work to GitHub main.
+- [x] Configure the native Godot vertical slice, HUD, touch controls, and mobile launch guidance for landscape gameplay.
+- [x] Enforce strict first-to-last story progression so missions unlock only after the preceding level is defeated.
+- [x] Assess the current menu, tab navigation, and orientation configuration for landscape tactical-lobby adaptation.
+- [x] Rebuild the home lobby as an original landscape tactical command deck with wide play, mode, loadout, and telemetry surfaces.
+- [x] Adapt the main navigation and supporting menu screens for landscape-first use without disrupting game or campaign flows.
+- [x] Validate the landscape tactical-menu redesign, checkpoint it, and synchronize it to GitHub main.
+- [x] Enforce a landscape-only session from app launch through app exit with native configuration and runtime orientation locking.
+- [x] Assess current landscape menu animation, Arsenal, Captain, and local persistence surfaces for this extension.
+- [x] Add subtle ambient HUD motion and a device-local first-run tactical tutorial overlay with dismissal state.
+- [x] Rebuild Arsenal and Captain menus as landscape-ready tactical grids without changing cosmetic fairness or local-only boundaries.
+- [x] Validate the tactical polish extension, checkpoint it, and synchronize it to GitHub main.
+- [x] Assess the existing Arsenal, Captain settings, and tactical tutorial persistence for interactive enhancements.
+- [x] Add interactive combat-stat tooltips and reduced-motion-aware animated preview cards for each original weapon.
+- [x] Add a replayable tactical tutorial control to Captain settings with device-local persistence behavior.
+- [x] Validate the interactive tactical enhancements, checkpoint them, and synchronize them to GitHub main.
+- [x] Assess existing Arsenal, controls, and Story-map surfaces for comparison, guidance, contextual tips, and usability refinements.
+- [x] Add a compact presentation-only weapon-comparison dock to the landscape Arsenal.
+- [x] Add controller-specific help cards and contextual campaign mission tips with clearer discovery cues.
+- [x] Validate the gameplay-support improvements, checkpoint them, and synchronize them to GitHub main.
+- [x] Diagnose the reported APK build failure from project configuration, dependencies, and available logs.
+- [x] Repair the Android/Expo build configuration or dependency metadata and validate the build-ready project state.
+- [x] Checkpoint and synchronize the APK-build repair with clear native-build verification guidance.
+- [x] Assess current release metadata and the managed Android signing boundary.
+- [x] Set the next release version and Android build identifier and document managed signing expectations.
+- [x] Validate release-readiness, checkpoint it, and synchronize the managed-build retry preparation.
+- [x] Assess current mobile audio playback, settings, assets, and command/campaign surfaces for original audio integration.
+- [x] Create original menu and campaign music plus responsive interface sound-effect assets with a license-safe design.
+- [x] Integrate device-local audio controls and accessible feedback into the landscape command deck and Story map.
+- [x] Validate the original audio enhancement, checkpoint it, and synchronize it to GitHub main.
+- [x] Audit GitHub alerts, package dependencies, and build configuration to classify actionable vulnerability findings.
+- [x] Apply safe dependency and configuration remediation for actionable vulnerabilities without weakening security boundaries.
+- [x] Validate the hardened dependency tree and document reproducible local build, verification, and managed deployment commands.
+- [x] Checkpoint and synchronize the security remediation and build guidance to GitHub main.
+- [x] Add practical release hardening recommendations and reproducible security verification scripts for ongoing maintenance.
+- [x] Review refreshed Dependabot findings and reconcile them with the committed lockfile audit.
+- [x] Initiate the supported signed managed build workflow for Android distribution.
+- [x] Create a recurring monthly security-audit review and reporting schedule.
+- [x] Monitor the active signed Android production build to completion.
+- [x] Prepare physical-device installation guidance for the generated Android artifact.
+- [ ] Prepare Play Console release metadata and testing-track materials.
+- [x] Create a no-cost direct-install Android test artifact that does not require Play Console enrollment.
+- [x] Prepare platform-neutral release metadata for a future store submission without enrolling in a paid console.
+- [x] Package the native Godot project as a clean import-ready handoff.
+- [x] Validate the Godot handoff archive and document the editor import steps.
+- [x] Reproduce and fix the Godot Nil-position runtime error reported from the imported handoff.
+- [x] Revalidate and repackage the corrected Godot handoff archive.
+- [x] Capture and eliminate the remaining Godot debugger errors from the imported project.
+- [x] Make the native touch controls reliably move, aim, fire, dodge, and trigger the Captain ability.
+- [x] Improve the original Godot combat presentation with grounded tactical lighting, material detail, and scene composition.
+- [x] Refine the Godot touch-control layout for ergonomic landscape mobile play.
+- [x] Validate and repackage the refined mobile touch-control handoff.
+- [x] Add animated pressed-state feedback to the Godot touchscreen buttons.
+- [x] Document and validate Android export prerequisites for the Godot handoff, including Termux limitations.
+- [x] Prepare safe source-controlled Android export-readiness configuration for the Godot handoff.
+- [x] Validate and document the remaining local-only Godot Android export steps.
+- [x] Upgrade Godot combat materials, depth treatment, and dramatic effects for a sharper premium mobile presentation.
+- [x] Validate and repackage the premium visual presentation handoff.
+- [x] Convert the Godot Brasswake combat slice to a mobile first-person shooter camera, weapon, and aiming model.
+- [x] Refine FPS HUD, touch targeting, and combat feedback for the first-person experience.
+- [x] Validate and repackage the first-person shooter Godot handoff.
+- [x] Add persisted first-person aim sensitivity and vertical inversion settings with an in-combat configuration panel.
+- [x] Add hold-to-aim ADS presentation, wheel-lock reload feedback, and audio cue support.
+- [x] Make privateer and Drowned Admiral attack telegraphs readable from the first-person camera, including directional HUD warnings.
+- [x] Validate, document, package, checkpoint, and synchronize the FPS controls and combat-feedback update.
+- [x] Ensure every sequential campaign level is an animated, interactive first-person combat mission with objectives, enemies, and completion state.
+- [x] Define and implement a ten-level sequential FPS campaign roster, with three to six persistent interactive checkpoints in every level.
+- [x] Add mission-specific boss identities and traversal set pieces across the ten-level FPS campaign.
+- [x] Add distinct late-game enemy archetypes with readable first-person combat behavior.
+- [x] Surface native campaign completion records on companion-app mission cards and progression displays.
+- [x] Validate, package, checkpoint, and synchronize the campaign encounter expansion.
+- [x] Add first-person environmental puzzle objectives, correct-path choices, and usable world objects that gate campaign checkpoints.
+- [x] Diagnose and eliminate all current native and companion-app errors before continuing campaign expansion.
+- [x] Implement checkpoint puzzle gates, mission-specific boss and enemy behavior, and local native-completion records on companion campaign cards.
+- [x] Add boss-specific arena hazards with first-person-readable telegraphs across the campaign.
+- [x] Add distinct checkpoint puzzle variations beyond ordered rune selection.
+- [x] Add a local native completion-record export and system share flow for supported devices.
+- [x] Validate, package, checkpoint, and synchronize the hazards, puzzle-variation, and sharing expansion.
+- [x] Diagnose and repair missing Godot runtime graphics and animations in the campaign scenes.
+- [x] Validate rendered visual nodes and animation playback, then repackage the repaired Godot handoff.
+- [x] Bundle all core visuals, animations, audio, and gameplay resources in the installed APK with no post-install dependency for campaign play.
+- [x] Redo the native graphics, animation, and material assembly pass from a clean runtime audit.
+- [x] Redo the companion and Godot offline-resource verification, handoff archive, and clean-extraction validation.
+- [x] Rerun all mobile/native regressions, checkpoint the redo, and synchronize the confirmed state to GitHub main.
+- [x] Diagnose and resolve the reported socket-exemption HTTP timeout without adding an online dependency to core game content.
+- [x] Validate the latest managed Android APK configuration and ensure the current build-ready source is synchronized to GitHub.
+- [x] Verify GitHub synchronization and add a current Android APK artifact to the repository if one is available from the managed build workflow; the available EAS APK is from an earlier build and a current matching artifact still requires a managed build.
+- [ ] Synchronize the current Blood & Brass source to the corrected DaddyFilth/nightfall repository target and verify its APK-release handoff state.
+- [ ] Compare, consolidate, validate, and synchronize the related DaddyFilth/nightfall and DaddyFilth/nightfall-blood-hunt projects before deleting only the user-confirmed duplicate repository.

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/brasswake_combat_scene.gd" id="1_combat"]
+[ext_resource type="Script" path="res://scripts/bootstrap.gd" id="2_boot"]
+
+[node name="CoffinFleet" type="Node3D"]
+script = ExtResource("1_combat")
+story_mission_id = 7
+
+[node name="Bootstrap" type="Node" parent="."]
+script = ExtResource("2_boot")

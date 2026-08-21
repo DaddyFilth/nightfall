@@ -1,0 +1,17 @@
+[config]
+name="NightfallIOSPreferenceBridge"
+binary="NightfallIOSPreferenceBridge.xcframework"
+initialization="register_nightfall_ios_preference_bridge_types"
+deinitialization="unregister_nightfall_ios_preference_bridge_types"
+
+[dependencies]
+linked=[]
+embedded=[]
+system=["Foundation.framework"]
+capabilities=[]
+files=[]
+linker_flags=["-ObjC"]
+
+[plist]
+NightfallPreferenceBridgeAppGroup:string_input="group.example.nightfall.bridge"
+NightfallPreferenceBridgeRelativePath:string="nightfall-bridge/expo-preferences.v1.json"
